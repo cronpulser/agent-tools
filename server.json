@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.cronpulser/cronpulser",
+  "title": "CronPulser",
+  "description": "Manage CronPulser cron jobs from an AI agent: list, create, pause, resume and trigger HTTP jobs.",
+  "version": "1.0.0",
+  "websiteUrl": "https://cronpulser.com/docs/mcp/",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.cronpulser.com/mcp"
+    }
+  ]
+}
