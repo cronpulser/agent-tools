@@ -32,6 +32,7 @@ a job is created; everything else is editable.
 3. For HTTP work, help them build or secure the receiving endpoint, then create the job.
 4. Always end with a test: **Run Now** from the job detail page, then read the execution record.
 5. Propose alert rules only after a successful test run.
+6. If a CronPulser MCP connection is available in this session, use its tools to list, create, pause, or trigger jobs directly instead of describing clicks. Without one, walk the user through the app.
 
 ## Reference files
 

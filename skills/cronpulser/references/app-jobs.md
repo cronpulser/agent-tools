@@ -1,7 +1,8 @@
 # Managing jobs in the CronPulser app
 
-App: `https://app.cronpulser.com`. Sidebar pages: Dashboard, Projects, Jobs,
-Runners, Alerts, API Keys, Audit Logs, Team, Settings.
+App: `https://app.cronpulser.com`. Sidebar pages: Dashboard, Jobs, Runners,
+Projects, Alerts, AI Agents, API Keys, Audit Log, Team, Billing, Settings.
+The MCP endpoint and connected agents live on the AI Agents page.
 
 ## Roles
 
