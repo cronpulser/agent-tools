@@ -42,13 +42,20 @@ Tools in this release:
 | `get_job` | Read one accessible job | `jobs:read` |
 | `list_execution_logs` | Read execution status and timing | `logs:read` |
 | `create_http_job` | Create and schedule an HTTP job | `jobs:write` |
+| `update_job` | Change only the fields you send | `jobs:write` |
+| `delete_job` | Delete a job and its schedule (destructive) | `jobs:write` |
 | `pause_job`, `resume_job` | Change scheduling state | `jobs:write` |
 | `trigger_job` | Start one immediate execution | `jobs:trigger` |
+| `list_alerts`, `get_alert` | Read alert rules | `jobs:read` |
+| `create_alert`, `update_alert` | Add or change any alert type | `jobs:write` |
+| `set_alert_active` | Turn an alert on or off | `jobs:write` |
+| `delete_alert` | Delete an alert (destructive) | `jobs:write` |
+| `list_alert_history` | Read when alerts fired | `jobs:read` |
 
-Deletion and secret rotation are intentionally not exposed. Write tools
-require an admin or member role; viewers stay read-only. Tool results never
-include job secrets, stored headers or payloads, response bodies, or Runner
-output. Every mutation is written to the tenant audit log with an MCP marker.
+Billing, team management and secret rotation are intentionally not exposed.
+Write tools require an admin or member role; viewers stay read-only. Tool
+results never include job secrets, header values or payloads, webhook header
+values, response bodies, or Runner output; header values are write-only. Every mutation is written to the tenant audit log with an MCP marker.
 
 Registry listings: [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=com.cronpulser/cronpulser)
 (`com.cronpulser/cronpulser`, see [server.json](server.json)) and
