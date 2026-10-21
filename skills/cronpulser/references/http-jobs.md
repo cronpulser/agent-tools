@@ -8,7 +8,7 @@ duration, and optionally the response body, then evaluates alert rules.
 
 - Method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, or `HEAD` as configured.
 - Header `X-CronPulser-Secret: <job secret>` on every request. The secret is generated per job and shown on the job detail page.
-- Custom headers from the job's Headers JSON. Recognized sensitive headers such as `Authorization` and `X-API-Key` are encrypted at rest.
+- Custom headers from the job's Headers list (up to 20). Every value is encrypted at rest and never shown again; the app and API show only header names. `Host`, `User-Agent`, `Content-Length`, hop-by-hop headers, and `X-CronPulser-*` are reserved.
 - Body from the job's Payload JSON, sent as `application/json` for methods with a body.
 - 30-second timeout including reading the response.
 - Destination must be a public hostname resolving to a public IP. Private, loopback, and link-local addresses are refused. Only same-origin redirects are followed.
@@ -72,7 +72,7 @@ Complete examples for ASP.NET Core, Go, and Laravel are in
 |---|---|
 | Method | `POST` for work, `GET` for health checks. `HEAD` for reachability only. |
 | URL | Full `https://` URL. Path can carry a job name. Never put secrets in the query string. |
-| Headers (JSON) | `{"Authorization": "Bearer …"}` when the endpoint also needs app auth. |
+| Headers | Add `Authorization` or `X-Api-Key` with its value when the endpoint also needs app auth. Values cannot be viewed after saving; to change one, add the same name again. |
 | Payload (JSON) | Small, static parameters such as `{"report": "daily"}`. |
 | Retry | Off unless the endpoint is idempotent. |
 | Response Logging | `on_failure` by default. `always` when the body is the audit trail you want to read in history. `never` for sensitive responses. Alert rules see the body in every mode. |

@@ -29,7 +29,7 @@ Jobs → **New Job**.
 2. **Executor**: HTTP, Remote Runner, or TLS Certificate. Fixed after creation.
 3. **Job Name**.
 4. Executor-specific fields:
-   - HTTP: method, URL (`https://` or `http://`), optional JSON headers, optional JSON payload, retry on/off, response logging mode.
+   - HTTP: method, URL (`https://` or `http://`), optional headers (name and value; values are write-only), optional JSON payload, retry on/off, response logging mode.
    - Remote Runner: pick an online Runner, then one of its discovered job keys. Keys come from that machine's `runner.yaml`; if the key is missing, the Runner has not been restarted after editing the file.
    - TLS Certificate: a public hostname such as `example.com`. No URL, path, or port.
 5. **Cron Schedule**: the builder offers presets and a custom five-field expression, plus a timezone. The editor previews the next five occurrences before saving. Use it to confirm the timezone is right.

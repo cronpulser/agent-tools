@@ -54,7 +54,7 @@ Load the one that matches the task. Each is self-contained.
 - Output is capped at 1 MiB per stream. Print a one-line summary, not file contents.
 - If the Runner is offline when a run is due, CronPulser records a failed execution immediately. Missed runs are not queued. A job that is already running survives a dropped connection; its result arrives after the Runner reconnects.
 - To upgrade or reinstall a Runner, never just re-run the installer on a machine that has one: uninstall first (see the reference files). Re-running on Linux registers a new Runner and rewrites `runner.yaml`.
-- Job secrets and stored headers are shown only in the app. Never write them into scripts, YAML, or chat.
+- Job secrets are shown only in the app; stored header values are never shown anywhere after saving. Never write them into scripts, YAML, or chat.
 - Do not quote prices, limits, or retention days from memory. Send the user to `https://cronpulser.com/pricing/`; `references/app-jobs.md` lists what is metered.
 - Cron uses five fields: minute, hour, day of month, month, day of week. Day of month and day of week match with OR when both are restricted, the standard cron behavior.
 
