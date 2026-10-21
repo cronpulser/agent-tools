@@ -39,8 +39,8 @@ a job is created; everything else is editable.
 Load the one that matches the task. Each is self-contained.
 
 - `references/app-jobs.md`: navigating the app, creating, editing, moving, pausing, deleting jobs, roles, and plan limits.
-- `references/linux-runner.md`: Linux Runner install, `runner.yaml`, script rules, and complete examples: PostgreSQL and MySQL backups from Docker containers, file archive backup, flock overlap protection.
-- `references/windows-runner.md`: Windows Server Runner install, `LocalService` permissions, PowerShell rules, and complete examples: SQL Server backup to a UNC share, service health report, Docker Desktop PostgreSQL backup.
+- `references/linux-runner.md`: Linux Runner install from GitHub Releases, first-job smoke test, `runner.yaml`, script rules and permissions, complete examples (PostgreSQL and MySQL backups from Docker containers, file archive backup, flock overlap protection), operations, and uninstall.
+- `references/windows-runner.md`: Windows Server Runner install from GitHub Releases, first-job smoke test, `LocalService` permissions, PowerShell rules, complete examples (SQL Server backup to a UNC share, service health report, Docker Desktop PostgreSQL backup), operations, and uninstall.
 - `references/http-jobs.md`: receiving endpoint design, `X-CronPulser-Secret` verification, idempotency, retries, response logging.
 - `references/tls-jobs.md`: TLS certificate jobs and their alert rule.
 - `references/alerts.md`: every alert type, conditions, recipients, webhooks, cooldown.
@@ -52,7 +52,8 @@ Load the one that matches the task. Each is self-contained.
 - Runner runs as the unprivileged `cronpulser` user on Linux and `LocalService` on Windows. Grant that identity the minimum access. Never recommend broad passwordless sudo or administrator rights.
 - Every Runner job needs a positive `timeout`. Choose it longer than a normal run and short enough to kill a hung process.
 - Output is capped at 1 MiB per stream. Print a one-line summary, not file contents.
-- If the Runner is offline when a run is due, CronPulser records a failed execution immediately. Missed runs are not queued.
+- If the Runner is offline when a run is due, CronPulser records a failed execution immediately. Missed runs are not queued. A job that is already running survives a dropped connection; its result arrives after the Runner reconnects.
+- To upgrade or reinstall a Runner, never just re-run the installer on a machine that has one: uninstall first (see the reference files). Re-running on Linux registers a new Runner and rewrites `runner.yaml`.
 - Job secrets and stored headers are shown only in the app. Never write them into scripts, YAML, or chat.
 - Do not quote prices, limits, or retention days from memory. Send the user to `https://cronpulser.com/pricing/`; `references/app-jobs.md` lists what is metered.
 - Cron uses five fields: minute, hour, day of month, month, day of week. Day of month and day of week match with OR when both are restricted, the standard cron behavior.
@@ -61,6 +62,8 @@ Load the one that matches the task. Each is self-contained.
 
 - App: `https://app.cronpulser.com`
 - Runner setup guide: `https://cronpulser.com/docs/runner/`
+- Runner source (MIT, open source): `https://github.com/cronpulser/cronpulser-runner`
+- Windows job scheduling guide: `https://cronpulser.com/guides/windows-job-scheduler/`
 - Secret verification guide: `https://cronpulser.com/guides/authenticate-cronpulser-requests/`
 - REST API: `https://cronpulser.com/docs/api/` (Pro and Scale)
 - MCP: `https://cronpulser.com/docs/mcp/` (Pro and Scale)

@@ -4,27 +4,68 @@ The Runner is a Go binary that runs as a systemd service under the unprivileged
 `cronpulser` user. It opens one outbound WebSocket to `api.cronpulser.com:443`.
 No inbound port, public IP, or SSH access is needed. CronPulser schedules; the
 Runner executes only the job keys in its local `runner.yaml` and returns exit
-code, stdout, stderr, and duration.
+code, stdout, stderr, and duration. A job that is already running keeps running
+if the connection drops; its result is sent once the Runner reconnects.
+
+The Runner is open source (MIT): `https://github.com/cronpulser/cronpulser-runner`.
+Releases are built by GitHub Actions and published as GitHub Releases with
+build provenance.
 
 ## Install
 
-1. In the app: Runners → **Add Runner** → copy the one-time token (`cp_runner_…`).
-2. On the machine, as root:
+1. In the app: **Runners → New Runner**, enter a name, **Create Runner**. The
+   dialog shows the install command with a one-time token (`cp_runner_…`,
+   valid 24 hours, shown once). Keep **Linux** selected and use **Copy command**.
+2. On the machine, run it as a user with sudo:
 
 ```bash
 curl -fsSL https://downloads.cronpulser.com/runner/install-runner.sh | \
 sudo sh -s -- \
   --server https://api.cronpulser.com \
   --token cp_runner_xxxxxxxxx \
-  --version 0.3.1
+  --version 0.3.4
 ```
 
-The installer verifies the release SHA-256, creates the `cronpulser` user,
+The installer downloads the binary from the GitHub Release for that version
+(0.3.1 and 0.3.2 come from `downloads.cronpulser.com`), verifies its SHA-256
+against the release's `SHA256SUMS`, creates the `cronpulser` user,
 installs `/usr/local/bin/cronpulser-runner`, writes `/etc/cronpulser/runner.yaml`
-(mode 0600), enables the systemd unit, and starts it. The Runner shows as
+(owned by root, readable by the `cronpulser` group, mode 0640), enables the systemd unit, and starts it. The Runner shows as
 Online on the Runners page within seconds.
 
-Supported: x86_64 (`linux-amd64`) and aarch64 (`linux-arm64`).
+Supported: x86_64 (`linux-amd64`) and aarch64 (`linux-arm64`), systemd-based.
+
+To verify a downloaded binary was built from the public source:
+`gh attestation verify cronpulser-runner-linux-amd64 --repo cronpulser/cronpulser-runner`.
+
+Do not re-run the installer to upgrade an existing Runner: it registers a new
+Runner and rewrites `runner.yaml`, which drops the job list. Uninstall first if
+a clean reinstall is intended.
+
+## First job: smoke test
+
+Before writing a real script, prove the path end to end:
+
+```bash
+sudo mkdir -p /opt/cronpulser/scripts
+printf '#!/bin/sh\necho "hello from $(hostname) at $(date -u +%%FT%%TZ)"\n' | sudo tee /opt/cronpulser/scripts/hello.sh >/dev/null
+sudo chown root:cronpulser /opt/cronpulser/scripts/hello.sh
+sudo chmod 0750 /opt/cronpulser/scripts/hello.sh
+sudo nano /etc/cronpulser/runner.yaml   # replace `jobs: {}` with the block below
+```
+
+```yaml
+jobs:
+  hello:
+    command: /opt/cronpulser/scripts/hello.sh
+    workingDirectory: /opt/cronpulser/scripts
+    timeout: 30
+```
+
+Then validate and restart (see below). `validate` prints `Configuration valid`
+and `hello  OK`. In the app create a **Remote Runner** job with that Runner and
+the `hello` key, click **Run Now**, and expect status success, exit code 0, and
+`hello from <host> at <time>`.
 
 ## Paths
 
@@ -52,6 +93,12 @@ jobs:
     workingDirectory: /opt/cronpulser/scripts
     timeout: 30m
 ```
+
+`runner.yaml` is owned by root and readable by the `cronpulser` group (mode
+0640), so edit it with `sudo`. A fresh install contains `jobs: {}`; replace that
+line, never add a second `jobs:` key. Installs older than 0.3.2 may still have
+a `cronpulser`-owned file; fix with
+`sudo chown root:cronpulser /etc/cronpulser/runner.yaml && sudo chmod 0640 /etc/cronpulser/runner.yaml`.
 
 Rules the Runner enforces:
 
@@ -83,7 +130,7 @@ Every script the Runner executes should:
 4. Write to a temporary `.partial` file and move it into place only on success.
 5. Exit non-zero on any failure. `set -e` covers most cases; check `$?` for commands run inside `if`.
 6. Print one summary line: what it did, where, how big. Never print secrets, environment variables, connection strings, or data rows.
-7. Be owned by root, mode 0755, and not writable by `cronpulser`, especially when it runs through sudo.
+7. Be owned by root and not writable by `cronpulser`: `root:cronpulser` mode 0750 when the Runner runs it directly (root edits, the Runner reads and runs, other users get nothing), `root:root` mode 0755 when it runs through sudo.
 
 Test as the service user before scheduling:
 
@@ -310,8 +357,16 @@ the skipped run shows as failed in history. If a skip should not fail, wrap it:
 
 ## Operations
 
+The installer enables the unit at boot and restarts it 5 seconds after a
+crash (Restart=always). While it is stopped, scheduled runs
+fail immediately and are not replayed; stopping it also stops a running job.
+
 ```bash
 sudo systemctl status cronpulser-runner --no-pager
+sudo systemctl stop cronpulser-runner
+sudo systemctl start cronpulser-runner
+sudo systemctl restart cronpulser-runner      # after editing runner.yaml
+sudo systemctl disable cronpulser-runner      # enable to undo
 sudo journalctl -u cronpulser-runner -f
 sudo -u cronpulser /usr/local/bin/cronpulser-runner validate
 /usr/local/bin/cronpulser-runner version
@@ -319,3 +374,20 @@ sudo cronpulser-runner rotate --token cp_runner_xxxxxxxxx   # token from Runners
 ```
 
 Rotation revokes the old secret immediately and keeps local jobs and cache.
+
+## Uninstall
+
+In the app, delete or reassign the jobs that use the Runner first (a Runner
+with scheduled jobs cannot be deleted), then delete the Runner; that revokes
+its credential and disconnects it. Then on the machine:
+
+```bash
+sudo systemctl disable --now cronpulser-runner
+sudo rm -f /etc/systemd/system/cronpulser-runner.service /usr/local/bin/cronpulser-runner
+sudo systemctl daemon-reload
+sudo rm -rf /etc/cronpulser /var/lib/cronpulser
+sudo userdel cronpulser
+```
+
+Scripts under `/opt/cronpulser/scripts` and any sudoers files the user created
+(`/etc/sudoers.d/cronpulser-*`) are not removed; remove the sudoers files too.

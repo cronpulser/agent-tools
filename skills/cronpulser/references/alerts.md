@@ -28,6 +28,8 @@ Output Match details:
 
 - **Email**: pick team members who have access to the job's project. Included on every plan. New rules preselect nobody; the user must tick recipients.
 - **Webhook URL**: an HTTPS endpoint that receives a JSON POST per notification. Paid plans only.
+- **Custom webhook body** (optional, needs a webhook URL): a JSON template sent instead of the standard body, e.g. to open a ticket: `{"summary":"{{alert_name}}: {{job_name}}","affected_web_site":"{{job_host}}","details":"{{message}}"}`. Placeholders work inside string values: `alert_name`, `alert_type`, `message`, `triggered_at`, `job_id`, `job_name`, `job_url`, `job_host`, `execution_status`, `executed_at`, `status_code`, `latency_ms`. Unknown placeholders are rejected on save. **Send test webhook** in the form posts the unsaved body once with sample data and shows the receiver's HTTP status and response, which is the fastest way to debug a 4xx from a ticket API.
+- **Webhook headers** (optional, up to 10, needs a webhook URL): extra request headers such as `X-Api-Key` or `Authorization` for receivers that require authentication. Values are encrypted and never shown again; leave a saved value blank to keep it. Changing the webhook host requires re-entering the values. `Content-Type`, `User-Agent`, `Host`, and `X-CronPulser-*` are reserved.
 
 ## Cooldown
 
