@@ -22,14 +22,30 @@ Invoke-WebRequest https://downloads.cronpulser.com/runner/install-runner.ps1 -Ou
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install-runner.ps1 `
   -Server https://api.cronpulser.com `
   -Token cp_runner_xxxxxxxxx `
-  -Version 0.3.4
+  -Version 0.3.5
 ```
 
 The installer downloads the binary from the GitHub Release for that version
 (0.3.1 and 0.3.2 come from `downloads.cronpulser.com`) and refuses to run it
-unless its SHA-256 matches the release's `SHA256SUMS`. Do not re-run the
-installer to upgrade: the service already exists and the install stops. Use
-Uninstall below for a clean reinstall.
+unless its SHA-256 matches the release's `SHA256SUMS`.
+
+## Upgrade
+
+Upgrade with `-Upgrade`; it keeps the registration, credentials, the
+`runner.yaml` jobs and the execution cache, and needs no token:
+
+```powershell
+Invoke-WebRequest https://downloads.cronpulser.com/runner/install-runner.ps1 -OutFile .\install-runner.ps1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install-runner.ps1 -Upgrade -Version 0.3.5
+```
+
+The new binary validates the existing `runner.yaml` first and changes nothing
+if it is invalid. It stops the service (Windows cannot replace a running
+executable), keeps the old binary as `cronpulser-runner.previous.exe`, starts
+the service and restores the old binary automatically if the service does not
+stay running. A job running during the upgrade is reported as failed, so
+upgrade between runs. Without `-Upgrade` the installer stops because the
+service already exists.
 
 ## First job: smoke test
 

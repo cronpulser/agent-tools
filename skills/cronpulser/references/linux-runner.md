@@ -23,7 +23,7 @@ curl -fsSL https://downloads.cronpulser.com/runner/install-runner.sh | \
 sudo sh -s -- \
   --server https://api.cronpulser.com \
   --token cp_runner_xxxxxxxxx \
-  --version 0.3.4
+  --version 0.3.5
 ```
 
 The installer downloads the binary from the GitHub Release for that version
@@ -38,9 +38,22 @@ Supported: x86_64 (`linux-amd64`) and aarch64 (`linux-arm64`), systemd-based.
 To verify a downloaded binary was built from the public source:
 `gh attestation verify cronpulser-runner-linux-amd64 --repo cronpulser/cronpulser-runner`.
 
-Do not re-run the installer to upgrade an existing Runner: it registers a new
-Runner and rewrites `runner.yaml`, which drops the job list. Uninstall first if
-a clean reinstall is intended.
+## Upgrade
+
+Upgrade with `--upgrade`; it keeps the registration, credentials, the
+`runner.yaml` jobs and the execution cache, and needs no token:
+
+```bash
+curl -fsSL https://downloads.cronpulser.com/runner/install-runner.sh | \
+sudo sh -s -- --upgrade --version 0.3.5
+```
+
+The new binary validates the existing `runner.yaml` first and changes nothing
+if it is invalid (for example a missing job script). It keeps the old binary as
+`/usr/local/bin/cronpulser-runner.previous` and restores it automatically if
+the service does not stay running. A job running during the restart is
+reported as failed, so upgrade between runs. Without `--upgrade` the installer
+registers a new Runner with an empty job list.
 
 ## First job: smoke test
 
@@ -383,7 +396,7 @@ its credential and disconnects it. Then on the machine:
 
 ```bash
 sudo systemctl disable --now cronpulser-runner
-sudo rm -f /etc/systemd/system/cronpulser-runner.service /usr/local/bin/cronpulser-runner
+sudo rm -f /etc/systemd/system/cronpulser-runner.service /usr/local/bin/cronpulser-runner /usr/local/bin/cronpulser-runner.previous
 sudo systemctl daemon-reload
 sudo rm -rf /etc/cronpulser /var/lib/cronpulser
 sudo userdel cronpulser
