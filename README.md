@@ -11,7 +11,7 @@ This repository holds the two ways an AI agent can work with CronPulser:
 
 | | What it is | Account access | Plans |
 | --- | --- | --- | --- |
-| [Remote MCP server](#remote-mcp-server) | Tools to manage HTTP, Runner and TLS jobs, alerts and Runners, and read run history | Scoped OAuth 2.1, as you | Pro and Scale |
+| [Remote MCP server](#remote-mcp-server) | Tools to manage projects, HTTP, Runner and TLS jobs, alerts and Runners, and read run history and failure summaries | Scoped OAuth 2.1, as you | Pro and Scale |
 | [Agent Skill](#agent-skill) | Markdown guidance that teaches a coding agent how to use CronPulser well | None | Free on every plan |
 
 ## Remote MCP server
@@ -38,9 +38,13 @@ Tools in this release:
 | Tool | Operation | Scope |
 | --- | --- | --- |
 | `list_projects` | Read accessible projects | `projects:read` |
+| `create_project`, `update_project` | Create or change a project (admins) | `jobs:write` |
+| `delete_project` | Delete a project with its jobs (destructive, admins) | `jobs:write` |
 | `list_jobs` | Read safe job metadata | `jobs:read` |
 | `get_job` | Read one accessible job | `jobs:read` |
 | `list_execution_logs` | Read execution status and timing | `logs:read` |
+| `get_job_stats` | Read a job's success rate and latest failures | `logs:read` |
+| `get_failure_summary` | Find failing jobs and jobs that did not run | `logs:read` |
 | `create_http_job` | Create and schedule an HTTP job | `jobs:write` |
 | `create_runner_job` | Schedule an allow-listed command on a Runner | `jobs:write` |
 | `create_tls_job` | Schedule a TLS certificate check | `jobs:write` |

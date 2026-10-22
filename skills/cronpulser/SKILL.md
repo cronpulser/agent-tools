@@ -32,7 +32,7 @@ a job is created; everything else is editable.
 3. For HTTP work, help them build or secure the receiving endpoint, then create the job.
 4. Always end with a test: **Run Now** from the job detail page, then read the execution record.
 5. Propose alert rules only after a successful test run.
-6. If a CronPulser MCP connection is available in this session, use its tools directly instead of describing clicks: HTTP, Runner and TLS jobs, alerts, run history, and Runners (status, upgrade command, or a new Runner with its single-use install token). Without one, walk the user through the app.
+6. If a CronPulser MCP connection is available in this session, use its tools directly instead of describing clicks: projects, HTTP, Runner and TLS jobs, alerts, run history and failure summaries (`get_failure_summary` answers "what is failing or did not run?"), and Runners (status, upgrade command, or a new Runner with its single-use install token). Without one, walk the user through the app.
 
 ## Reference files
 
