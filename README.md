@@ -11,7 +11,7 @@ This repository holds the two ways an AI agent can work with CronPulser:
 
 | | What it is | Account access | Plans |
 | --- | --- | --- | --- |
-| [Remote MCP server](#remote-mcp-server) | Tools to list, create, pause, resume and trigger jobs and read run history | Scoped OAuth 2.1, as you | Pro and Scale |
+| [Remote MCP server](#remote-mcp-server) | Tools to manage HTTP, Runner and TLS jobs, alerts and Runners, and read run history | Scoped OAuth 2.1, as you | Pro and Scale |
 | [Agent Skill](#agent-skill) | Markdown guidance that teaches a coding agent how to use CronPulser well | None | Free on every plan |
 
 ## Remote MCP server
@@ -42,6 +42,8 @@ Tools in this release:
 | `get_job` | Read one accessible job | `jobs:read` |
 | `list_execution_logs` | Read execution status and timing | `logs:read` |
 | `create_http_job` | Create and schedule an HTTP job | `jobs:write` |
+| `create_runner_job` | Schedule an allow-listed command on a Runner | `jobs:write` |
+| `create_tls_job` | Schedule a TLS certificate check | `jobs:write` |
 | `update_job` | Change only the fields you send | `jobs:write` |
 | `delete_job` | Delete a job and its schedule (destructive) | `jobs:write` |
 | `pause_job`, `resume_job` | Change scheduling state | `jobs:write` |
@@ -51,11 +53,15 @@ Tools in this release:
 | `set_alert_active` | Turn an alert on or off | `jobs:write` |
 | `delete_alert` | Delete an alert (destructive) | `jobs:write` |
 | `list_alert_history` | Read when alerts fired | `jobs:read` |
+| `list_runners`, `get_runner` | Read Runner status, version and upgrade command | `jobs:read` |
+| `create_runner` | Create a Runner and its single-use install token (admins) | `jobs:write` |
 
 Billing, team management and secret rotation are intentionally not exposed.
 Write tools require an admin or member role; viewers stay read-only. Tool
 results never include job secrets, header values or payloads, webhook header
-values, response bodies, or Runner output; header values are write-only. Every mutation is written to the tenant audit log with an MCP marker.
+values, response bodies, or Runner output; header values are write-only. The
+only credential returned is the single-use Runner install token from
+`create_runner`. Every mutation is written to the tenant audit log with an MCP marker.
 
 Registry listings: [Official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers?search=com.cronpulser/cronpulser)
 (`com.cronpulser/cronpulser`, see [server.json](server.json)) and
