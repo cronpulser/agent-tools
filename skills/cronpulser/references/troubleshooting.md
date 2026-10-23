@@ -64,9 +64,11 @@ The endpoint rejected the request. Ask whether it verifies `X-CronPulser-Secret`
 and whether the expected secret matches the job's Secret Key shown on the job
 detail page. Secrets are per job; a copied job has a different secret.
 
-**HTTP job: status 5xx then "retry"**
-Retry is enabled. CronPulser waited at least five seconds and sent the request
-once more. Confirm the endpoint is safe to call twice (idempotent).
+**HTTP job: a failure then a "retry" result**
+Retry is enabled. CronPulser waited at least 15 seconds and sent the request
+once more; the retry's result decides alerts. GET/HEAD retry on 5xx, timeout,
+or connection errors. POST/PUT/PATCH/DELETE retry only when the first request
+never reached the server (DNS, connection, or TLS failure).
 
 **HTTP job: "destination must resolve only to public IP addresses; use Runner for private services"**
 CronPulser only calls public destinations. Private IPs, localhost, and internal
@@ -87,13 +89,15 @@ Changing the hostname hides previous results until the next check. Run Now.
 
 **Alert did not fire although runs fail**
 Ask: does the rule have at least one recipient ticked? Is the rule active? Is
-it inside its cooldown (default 30 minutes)? For Output Match with a JSON path,
+it already firing (one notification per incident; see its alert page)? Did a
+passing retry cancel the failure? For Output Match with a JSON path,
 is the output valid JSON, under 4 KB for HTTP bodies, and does the path exist?
 Missing output, invalid JSON, or a missing path currently count as no match.
 
 **Alert fires repeatedly**
-Expected while the condition holds; the cooldown sets the interval. Raise the
-cooldown or fix the job.
+Each new notification is either a reminder (set by "Remind while still
+firing") or a new incident after a recovery. Flapping jobs recover and fire
+again; raise "Recover after passing checks" or fix the job.
 
 **No Execution alert fired but the job ran**
 Grace minutes are shorter than queue delay plus run time. Raise `grace_minutes`.

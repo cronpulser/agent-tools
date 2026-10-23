@@ -43,7 +43,7 @@ Load the one that matches the task. Each is self-contained.
 - `references/windows-runner.md`: Windows Server Runner install from GitHub Releases, first-job smoke test, `LocalService` permissions, PowerShell rules, complete examples (SQL Server backup to a UNC share, service health report, Docker Desktop PostgreSQL backup), operations, and uninstall.
 - `references/http-jobs.md`: receiving endpoint design, `X-CronPulser-Secret` verification, idempotency, retries, response logging.
 - `references/tls-jobs.md`: TLS certificate jobs and their alert rule.
-- `references/alerts.md`: every alert type, conditions, recipients, webhooks, cooldown.
+- `references/alerts.md`: every alert type, conditions, recipients, webhooks, incidents and reminders.
 - `references/troubleshooting.md`: what each status, banner, or error in the app means and the question to ask next.
 
 ## Non-negotiable rules

@@ -12,7 +12,7 @@ duration, and optionally the response body, then evaluates alert rules.
 - Body from the job's Payload JSON, sent as `application/json` for methods with a body.
 - 30-second timeout including reading the response.
 - Destination must be a public hostname resolving to a public IP. Private, loopback, and link-local addresses are refused. Only same-origin redirects are followed.
-- Optional retry: when enabled, a timeout, transport error, or 5xx response queues one more attempt after at least five seconds. Off by default. Enable only if the endpoint is idempotent.
+- Optional retry: one more attempt after at least 15 seconds. Default on for new GET/HEAD jobs, off for other methods. GET/HEAD retry on timeout, transport error, or 5xx. POST/PUT/PATCH/DELETE retry only when the request never reached the server (DNS, connection, or TLS failure), so they are never processed twice by a retry. Alerts wait for the retry result, so a single blip does not alert.
 
 ## Endpoint rules
 

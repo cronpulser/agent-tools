@@ -29,8 +29,8 @@ job's Alerts section:
 - `include_failures`: also notify when the check itself fails (handshake error, invalid chain, wrong hostname).
 
 Select recipients explicitly; new rules preselect nobody. The rule is evaluated
-after every scheduled check and re-notifies once the cooldown expires while the
-condition still matches. There is no automatic recovery notification.
+after every scheduled check. A match opens one incident; a healthy certificate
+closes it and sends a recovery notice when the rule's recovery option is on.
 
 ## Editing
 
