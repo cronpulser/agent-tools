@@ -38,7 +38,7 @@ one notification; later matches stay quiet. Settings (`options`):
 - `reminder_minutes`: repeat while still firing, `0` (off, default), `60`, `240`, or `1440`.
 - `recovery_checks`: consecutive passing results that close the incident, 1 to 5 (default 1).
 - `notify_on_recovery`: send a "Resolved" notification with the outage duration (default on).
-- `trigger`: `{failures: N, window: M}` fires when N of the last M checks match, 1 ≤ N ≤ M ≤ 10. Default 1 of 1 (every match). The app offers "Immediately", "2 in a row", "3 in a row", and Custom. Not used by No Execution. The former Consecutive Failures type is now Execution Failure with N of N.
+- `trigger`: `{failures: N, window: M}` fires when N of the last M checks match, 1 ≤ N ≤ M ≤ 10. Default 1 of 1 (every match). The app offers "Immediately" and "Custom: N of the last M checks" (starting at 2 of 2; N of N means N in a row). Not used by No Execution. The former Consecutive Failures type is now Execution Failure with N of N.
 
 Pausing the job, changing its URL, method, or Runner, disabling the rule, or
 changing its condition closes the incident without a notice. **Mark resolved**
