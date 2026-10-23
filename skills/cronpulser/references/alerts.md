@@ -35,10 +35,10 @@ Output Match details:
 An alert is OK or Firing. The first matching result opens an incident and sends
 one notification; later matches stay quiet. Settings (`options`):
 
-- `reminder_minutes`: repeat while still firing every N minutes, `0` (off, default) or 10 to 10080 (7 days). The app offers Off, 15 minutes, 1 hour, 4 hours, 24 hours, and Custom (minutes, hours, or days).
+- `reminder_minutes`: repeat while still firing every N minutes, `0` (off, default) or 10 to 10080 (7 days). In the app: Remind while still firing On/Off, then Every N minutes, hours, or days.
 - `recovery_checks`: consecutive passing results that close the incident, 1 to 5 (default 1).
 - `notify_on_recovery`: send a "Resolved" notification with the outage duration (default on).
-- `trigger`: `{failures: N, window: M}` fires when N of the last M checks match, 1 ≤ N ≤ M ≤ 10. Default 1 of 1 (every match). The app offers "Immediately" and "Custom: N of the last M checks" (starting at 2 of 2; N of N means N in a row). Not used by No Execution. The former Consecutive Failures type is now Execution Failure with N of N.
+- `trigger`: `{failures: N, window: M}` fires when N of the last M checks match, 1 ≤ N ≤ M ≤ 10. Default 1 of 1 (every match). The app offers "Immediately" and "N of the last M checks" (starting at 2 of 2; N of N means N in a row). Not used by No Execution. The former Consecutive Failures type is now Execution Failure with N of N.
 
 Pausing the job, changing its URL, method, or Runner, disabling the rule, or
 changing its condition closes the incident without a notice. **Mark resolved**
